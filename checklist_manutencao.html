@@ -1,354 +1,335 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'}
-    span.s1 {font: 12.0px Helvetica}
-    span.s2 {font: 13.0px 'Helvetica Neue'}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist de Manutenção</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; padding: 16px; color: #1a1a1a; }
+  .container { max-width: 720px; margin: 0 auto; }
+
+  /* HEADER */
+  .app-header { background: #185FA5; border-radius: 12px; padding: 20px; margin-bottom: 16px; color: #fff; display: flex; align-items: center; gap: 14px; }
+  .app-header .icon { width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+  .app-header h1 { font-size: 18px; font-weight: 600; }
+  .app-header p { font-size: 13px; opacity: 0.8; margin-top: 2px; }
+
+  /* CARD */
+  .card { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px; overflow: hidden; }
+  .card-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; cursor: pointer; user-select: none; }
+  .card-header .icon { font-size: 20px; }
+  .card-header .title { flex: 1; font-size: 14px; font-weight: 600; color: #1a1a1a; }
+  .card-header .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: #dbeafe; color: #1e40af; font-weight: 500; }
+  .card-header .chevron { font-size: 16px; color: #6b7280; transition: transform 0.2s; }
+  .card-header.collapsed .chevron { transform: rotate(-90deg); }
+  .card-body { padding: 4px 0; display: block; }
+  .card-body.hidden { display: none; }
+
+  /* ITEM */
+  .item { padding: 10px 16px; border-bottom: 1px solid #f3f4f6; }
+  .item:last-child { border-bottom: none; }
+  .item-label { font-size: 13px; color: #374151; margin-bottom: 8px; font-weight: 500; }
+  .radio-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rb { padding: 5px 12px; border-radius: 20px; border: 1px solid #d1d5db; font-size: 12px; cursor: pointer; background: #fff; color: #6b7280; transition: all 0.15s; font-weight: 500; }
+  .rb:hover { background: #f9fafb; }
+  .rb.ok.sel { background: #dcfce7; border-color: #16a34a; color: #15803d; }
+  .rb.nok.sel { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
+  .rb.na.sel { background: #f3f4f6; border-color: #6b7280; color: #374151; }
+  .obs-field { display: none; margin-top: 8px; width: 100%; padding: 7px 10px; border: 1px solid #fca5a5; border-radius: 8px; font-size: 12px; background: #fff5f5; color: #1a1a1a; font-family: inherit; resize: vertical; }
+  .obs-field.show { display: block; }
+
+  /* META FORM */
+  .meta-form { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 12px; }
+  .meta-form h2 { font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-grid label { font-size: 11px; color: #6b7280; display: block; margin-bottom: 4px; font-weight: 500; }
+  .form-grid input, .form-grid select { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; background: #fff; color: #1a1a1a; font-family: inherit; }
+  .form-grid input:focus, .form-grid select:focus { outline: 2px solid #185FA5; outline-offset: 1px; }
+
+  /* SUMMARY */
+  .summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .stat { background: #fff; border-radius: 10px; border: 1px solid #e5e7eb; padding: 12px; text-align: center; }
+  .stat .n { font-size: 24px; font-weight: 700; }
+  .stat .l { font-size: 11px; color: #6b7280; margin-top: 2px; }
+  .stat.ok .n { color: #16a34a; }
+  .stat.nok .n { color: #dc2626; }
+  .stat.na .n { color: #6b7280; }
+
+  /* BUTTONS */
+  .actions { display: flex; gap: 10px; margin-bottom: 16px; }
+  .btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px; font-weight: 600; cursor: pointer; background: #fff; color: #374151; font-family: inherit; transition: all 0.15s; }
+  .btn:hover { background: #f9fafb; }
+  .btn.primary { background: #185FA5; border-color: #185FA5; color: #fff; }
+  .btn.primary:hover { background: #1e40af; }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #166534; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.2); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999; }
+  .toast.show { opacity: 1; }
+  .toast.error { background: #991b1b; }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap { background: #e5e7eb; border-radius: 20px; height: 6px; margin-bottom: 14px; overflow: hidden; }
+  .progress-bar { height: 100%; background: #185FA5; border-radius: 20px; transition: width 0.3s; }
+
+  @media (max-width: 480px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .summary { grid-template-columns: 1fr 1fr 1fr; }
+  }
+</style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="pt-BR"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1">&lt;title&gt;Checklist de Manutenção&lt;/title&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>* { box-sizing: border-box; margin: 0; padding: 0; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; padding: 16px; color: #1a1a1a; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.container { max-width: 720px; margin: 0 auto; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* HEADER */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-header { background: #185FA5; border-radius: 12px; padding: 20px; margin-bottom: 16px; color: #fff; display: flex; align-items: center; gap: 14px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-header .icon { width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-header h1 { font-size: 18px; font-weight: 600; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-header p { font-size: 13px; opacity: 0.8; margin-top: 2px; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* CARD */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px; overflow: hidden; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; cursor: pointer; user-select: none; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-header .icon { font-size: 20px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-header .title { flex: 1; font-size: 14px; font-weight: 600; color: #1a1a1a; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-header .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: #dbeafe; color: #1e40af; font-weight: 500; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-header .chevron { font-size: 16px; color: #6b7280; transition: transform 0.2s; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-header.collapsed .chevron { transform: rotate(-90deg); }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-body { padding: 4px 0; display: block; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-body.hidden { display: none; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* ITEM */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.item { padding: 10px 16px; border-bottom: 1px solid #f3f4f6; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.item:last-child { border-bottom: none; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.item-label { font-size: 13px; color: #374151; margin-bottom: 8px; font-weight: 500; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.radio-group { display: flex; gap: 6px; flex-wrap: wrap; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.rb { padding: 5px 12px; border-radius: 20px; border: 1px solid #d1d5db; font-size: 12px; cursor: pointer; background: #fff; color: #6b7280; transition: all 0.15s; font-weight: 500; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.rb:hover { background: #f9fafb; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.rb.ok.sel { background: #dcfce7; border-color: #16a34a; color: #15803d; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.rb.nok.sel { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.rb.na.sel { background: #f3f4f6; border-color: #6b7280; color: #374151; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.obs-field { display: none; margin-top: 8px; width: 100%; padding: 7px 10px; border: 1px solid #fca5a5; border-radius: 8px; font-size: 12px; background: #fff5f5; color: #1a1a1a; font-family: inherit; resize: vertical; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.obs-field.show { display: block; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* META FORM */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.meta-form { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 12px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.meta-form h2 { font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.form-grid label { font-size: 11px; color: #6b7280; display: block; margin-bottom: 4px; font-weight: 500; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.form-grid input, .form-grid select { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; background: #fff; color: #1a1a1a; font-family: inherit; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.form-grid input:focus, .form-grid select:focus { outline: 2px solid #185FA5; outline-offset: 1px; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* SUMMARY */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat { background: #fff; border-radius: 10px; border: 1px solid #e5e7eb; padding: 12px; text-align: center; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat .n { font-size: 24px; font-weight: 700; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat .l { font-size: 11px; color: #6b7280; margin-top: 2px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat.ok .n { color: #16a34a; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat.nok .n { color: #dc2626; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat.na .n { color: #6b7280; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* BUTTONS */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.actions { display: flex; gap: 10px; margin-bottom: 16px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px; font-weight: 600; cursor: pointer; background: #fff; color: #374151; font-family: inherit; transition: all 0.15s; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn:hover { background: #f9fafb; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn.primary { background: #185FA5; border-color: #185FA5; color: #fff; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn.primary:hover { background: #1e40af; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn:disabled { opacity: 0.6; cursor: not-allowed; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* TOAST */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #166534; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.2); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast.show { opacity: 1; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast.error { background: #991b1b; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* PROGRESS BAR */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.progress-bar-wrap { background: #e5e7eb; border-radius: 20px; height: 6px; margin-bottom: 14px; overflow: hidden; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.progress-bar { height: 100%; background: #185FA5; border-radius: 20px; transition: width 0.3s; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>@media (max-width: 480px) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.form-grid { grid-template-columns: 1fr; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.summary { grid-template-columns: 1fr 1fr 1fr; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="container"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="app-header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="icon"&gt;🚛&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;h1&gt;Checklist de Manutenção&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p&gt;Preenchimento diário — Caminhões e Equipamentos&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- DADOS DO PREENCHIMENTO --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="meta-form"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;Identificação&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;label&gt;Data&lt;/label&gt;&lt;input type="date" id="f-data"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;label&gt;Turno&lt;/label&gt;&lt;select id="f-turno"&gt;&lt;option&gt;Manhã&lt;/option&gt;&lt;option&gt;Tarde&lt;/option&gt;&lt;option&gt;Noite&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;label&gt;Operador / Motorista&lt;/label&gt;&lt;input type="text" id="f-operador" placeholder="Nome completo"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;label&gt;Veículo / Equipamento&lt;/label&gt;&lt;input type="text" id="f-veiculo" placeholder="Ex: Truck 04"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;label&gt;Placa / TAG&lt;/label&gt;&lt;input type="text" id="f-placa" placeholder="Ex: ABC-1234"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;label&gt;Hodômetro / Horímetro&lt;/label&gt;&lt;input type="text" id="f-hodometro" placeholder="Ex: 128.450 km"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- PROGRESSO --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="progress-bar-wrap"&gt;&lt;div class="progress-bar" id="progress-bar" style="width:0%"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- SEÇÕES DO CHECKLIST --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="sections-container"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- RESUMO --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="summary"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="stat ok"&gt;&lt;div class="n" id="s-ok"&gt;0&lt;/div&gt;&lt;div class="l"&gt;✅ Conformes&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="stat nok"&gt;&lt;div class="n" id="s-nok"&gt;0&lt;/div&gt;&lt;div class="l"&gt;❌ Não conformes&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="stat na"&gt;&lt;div class="n" id="s-na"&gt;0&lt;/div&gt;&lt;div class="l"&gt;— N/A&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- AÇÕES --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="actions"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn" onclick="resetForm()"&gt;🔄 Limpar&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn primary" id="btn-submit" onclick="submitChecklist()"&gt;📤 Enviar Checklist&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="toast" id="toast"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">// ============================================================</p>
-<p class="p1">// ⚙️<span class="Apple-converted-space">  </span>CONFIGURAÇÃO — cole sua URL do Google Apps Script aqui</p>
-<p class="p1">// ============================================================</p>
-<p class="p3"><span class="s1">const APPS_SCRIPT_URL = '<a href="https://script.google.com/macros/s/AKfycbwbGgnBbyQtOS8K93He39yKeqzPyq1YEzAkZtcKpqCvsE23WluLVHQFUc3xEvaGlO4SpA/exec"><span class="s2">https://script.google.com/macros/s/AKfycbwbGgnBbyQtOS8K93He39yKeqzPyq1YEzAkZtcKpqCvsE23WluLVHQFUc3xEvaGlO4SpA/exec</span></a>';</span></p>
-<p class="p1">// ============================================================</p>
-<p class="p2"><br></p>
-<p class="p1">const SECTIONS = [</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 'motor', icon: '🛢️', label: 'Motor e Fluidos', items: [</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Nível de óleo do motor',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Nível de água / líquido de arrefecimento',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Nível de combustível',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Nível de óleo hidráulico',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Sem vazamentos visíveis (óleo, água, combustível)',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Correias e tensores sem desgaste excessivo',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>]},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 'freios', icon: '🔧', label: 'Freios e Suspensão', items: [</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Freio de serviço — pedal firme, sem esponjamento',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Freio de estacionamento funcional',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Pastilhas / lonas sem desgaste excessivo',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Amortecedores sem vazamento',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Molas / feixes sem trincas ou deformações',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>]},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 'pneus', icon: '⚫', label: 'Pneus e Rodas', items: [</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Pressão dos pneus adequada (todos os eixos)',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Desgaste uniforme dos pneus',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Sem bolhas, cortes ou objetos encravados',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Porcas de roda apertadas (sem folga)',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Estepe disponível e calibrado',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>]},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 'eletrico', icon: '⚡', label: 'Sistema Elétrico e Iluminação', items: [</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Faróis dianteiros (alto e baixo)',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Lanternas e luz de freio traseiras',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Setas e pisca-alerta funcionando',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Luz de ré e buzina de ré',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Bateria sem sulfatação / terminais limpos',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Alternador carregando corretamente',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>]},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 'cabine', icon: '🪑', label: 'Cabine e Ergonomia', items: [</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Cinto de segurança funcional (todos os lugares)',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Espelhos retrovisores ajustados e limpos',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Para-brisas sem trincas ou obstruções',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Limpadores de para-brisas com borracha em bom estado',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Tacógrafo / rastreador ligado e funcionando',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Documentação do veículo no local (CRLV, seguro)',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Extintor de incêndio vigente e acessível',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Triângulo de segurança presente',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>]},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 'carroceria', icon: '📦', label: 'Carroceria e Implemento', items: [</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Travas e fechamentos da carroceria operacionais',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Sem danos estruturais visíveis (amassados, trincas)',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Sinalização refletiva íntegra',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Amarrações / tensores em bom estado (se aplicável)',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>'Implemento / equipamento sem danos ou vazamentos',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>]},</p>
-<p class="p1">];</p>
-<p class="p2"><br></p>
-<p class="p1">const state = {};</p>
-<p class="p1">let totalItems = 0;</p>
-<p class="p2"><br></p>
-<p class="p1">function build() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>totalItems = 0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>SECTIONS.forEach(s =&gt; totalItems += s.items.length);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const c = document.getElementById('sections-container');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>c.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>SECTIONS.forEach(s =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const div = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>div.className = 'card';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>div.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="card-header" id="hdr-${s.id}" onclick="toggleSection('${s.id}')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="icon"&gt;${s.icon}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="title"&gt;${s.label}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="badge" id="badge-${s.id}"&gt;0/${s.items.length}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="chevron"&gt;▾&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="card-body" id="body-${s.id}"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>${s.items.map((item, i) =&gt; `</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="item" id="item-${s.id}-${i}"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="item-label"&gt;${item}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="radio-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="rb ok" onclick="setStatus('${s.id}',${i},'ok',this)"&gt;✅ Conforme&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="rb nok" onclick="setStatus('${s.id}',${i},'nok',this)"&gt;❌ Não conforme&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="rb na" onclick="setStatus('${s.id}',${i},'na',this)"&gt;— N/A&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;textarea class="obs-field" id="obs-${s.id}-${i}" placeholder="Descreva a não conformidade (obrigatório)..." rows="2"&gt;&lt;/textarea&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>`).join('')}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.appendChild(div);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const d = new Date();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-data').value = d.toISOString().split('T')[0];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>updateSummary();</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function toggleSection(id) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const body = document.getElementById(`body-${id}`);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const hdr = document.getElementById(`hdr-${id}`);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>body.classList.toggle('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>hdr.classList.toggle('collapsed');</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function setStatus(sec, idx, val, el) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const key = `${sec}-${idx}`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>state[key] = val;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const item = document.getElementById(`item-${sec}-${idx}`);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>item.querySelectorAll('.rb').forEach(b =&gt; b.classList.remove('sel'));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>el.classList.add('sel');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const obs = document.getElementById(`obs-${sec}-${idx}`);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>obs.classList.toggle('show', val === 'nok');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>updateBadge(sec);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>updateSummary();</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function updateBadge(sec) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const s = SECTIONS.find(x =&gt; x.id === sec);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const done = s.items.filter((_, i) =&gt; state[`${sec}-${i}`]).length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById(`badge-${sec}`).textContent = `${done}/${s.items.length}`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const allDone = done === s.items.length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById(`badge-${sec}`).style.background = allDone ? '#dcfce7' : '#dbeafe';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById(`badge-${sec}`).style.color = allDone ? '#15803d' : '#1e40af';</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function updateSummary() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let ok = 0, nok = 0, na = 0, total = 0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>Object.values(state).forEach(v =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>total++;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (v === 'ok') ok++;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>else if (v === 'nok') nok++;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>else if (v === 'na') na++;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('s-ok').textContent = ok;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('s-nok').textContent = nok;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('s-na').textContent = na;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('progress-bar').style.width = `${Math.round((total / totalItems) * 100)}%`;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function resetForm() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if (!confirm('Limpar todo o checklist?')) return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>Object.keys(state).forEach(k =&gt; delete state[k]);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>build();</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">async function submitChecklist() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const operador = document.getElementById('f-operador').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const veiculo = document.getElementById('f-veiculo').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const data = document.getElementById('f-data').value;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if (!operador || !veiculo || !data) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>showToast('Preencha Data, Operador e Veículo antes de enviar.', true);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// Monta lista de todos os itens</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const itens = [];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>SECTIONS.forEach(s =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>s.items.forEach((item, i) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const key = `${s.id}-${i}`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const status = state[key] || 'Não avaliado';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const obs = document.getElementById(`obs-${s.id}-${i}`)?.value.trim() || '';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>itens.push({ secao: s.label, item, status, observacao: obs });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const payload = {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>data,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>turno: document.getElementById('f-turno').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>operador,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>veiculo,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>placa: document.getElementById('f-placa').value.trim(),</p>
-<p class="p1"><span class="Apple-converted-space">    </span>hodometro: document.getElementById('f-hodometro').value.trim(),</p>
-<p class="p1"><span class="Apple-converted-space">    </span>itens,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>timestamp: new Date().toLocaleString('pt-BR'),</p>
-<p class="p1"><span class="Apple-converted-space">  </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const btn = document.getElementById('btn-submit');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>btn.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>btn.textContent = '⏳ Enviando...';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>await fetch(APPS_SCRIPT_URL, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>method: 'POST',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>body: JSON.stringify(payload),</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>showToast('✅ Checklist enviado com sucesso!');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>resetForm();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} catch (e) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>showToast('❌ Erro ao enviar. Verifique a URL do Apps Script.', true);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} finally {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.textContent = '📤 Enviar Checklist';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function showToast(msg, isError = false) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const t = document.getElementById('toast');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>t.textContent = msg;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>t.className = 'toast show' + (isError ? ' error' : '');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; t.classList.remove('show'), 3500);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">build();</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+<div class="container">
+
+  <div class="app-header">
+    <div class="icon">🚛</div>
+    <div>
+      <h1>Checklist de Manutenção</h1>
+      <p>Preenchimento diário — Caminhões e Equipamentos</p>
+    </div>
+  </div>
+
+  <!-- DADOS DO PREENCHIMENTO -->
+  <div class="meta-form">
+    <h2>Identificação</h2>
+    <div class="form-grid">
+      <div><label>Data</label><input type="date" id="f-data"></div>
+      <div><label>Turno</label><select id="f-turno"><option>Manhã</option><option>Tarde</option><option>Noite</option></select></div>
+      <div><label>Operador / Motorista</label><input type="text" id="f-operador" placeholder="Nome completo"></div>
+      <div><label>Veículo / Equipamento</label><input type="text" id="f-veiculo" placeholder="Ex: Truck 04"></div>
+      <div><label>Placa / TAG</label><input type="text" id="f-placa" placeholder="Ex: ABC-1234"></div>
+      <div><label>Hodômetro / Horímetro</label><input type="text" id="f-hodometro" placeholder="Ex: 128.450 km"></div>
+    </div>
+  </div>
+
+  <!-- PROGRESSO -->
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+
+  <!-- SEÇÕES DO CHECKLIST -->
+  <div id="sections-container"></div>
+
+  <!-- RESUMO -->
+  <div class="summary">
+    <div class="stat ok"><div class="n" id="s-ok">0</div><div class="l">✅ Conformes</div></div>
+    <div class="stat nok"><div class="n" id="s-nok">0</div><div class="l">❌ Não conformes</div></div>
+    <div class="stat na"><div class="n" id="s-na">0</div><div class="l">— N/A</div></div>
+  </div>
+
+  <!-- AÇÕES -->
+  <div class="actions">
+    <button class="btn" onclick="resetForm()">🔄 Limpar</button>
+    <button class="btn primary" id="btn-submit" onclick="submitChecklist()">📤 Enviar Checklist</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// ⚙️  CONFIGURAÇÃO — cole sua URL do Google Apps Script aqui
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbGgnBbyQtOS8K93He39yKeqzPyq1YEzAkZtcKpqCvsE23WluLVHQFUc3xEvaGlO4SpA/exec';
+// ============================================================
+
+const SECTIONS = [
+  { id: 'motor', icon: '🛢️', label: 'Motor e Fluidos', items: [
+    'Nível de óleo do motor',
+    'Nível de água / líquido de arrefecimento',
+    'Nível de combustível',
+    'Nível de óleo hidráulico',
+    'Sem vazamentos visíveis (óleo, água, combustível)',
+    'Correias e tensores sem desgaste excessivo',
+  ]},
+  { id: 'freios', icon: '🔧', label: 'Freios e Suspensão', items: [
+    'Freio de serviço — pedal firme, sem esponjamento',
+    'Freio de estacionamento funcional',
+    'Pastilhas / lonas sem desgaste excessivo',
+    'Amortecedores sem vazamento',
+    'Molas / feixes sem trincas ou deformações',
+  ]},
+  { id: 'pneus', icon: '⚫', label: 'Pneus e Rodas', items: [
+    'Pressão dos pneus adequada (todos os eixos)',
+    'Desgaste uniforme dos pneus',
+    'Sem bolhas, cortes ou objetos encravados',
+    'Porcas de roda apertadas (sem folga)',
+    'Estepe disponível e calibrado',
+  ]},
+  { id: 'eletrico', icon: '⚡', label: 'Sistema Elétrico e Iluminação', items: [
+    'Faróis dianteiros (alto e baixo)',
+    'Lanternas e luz de freio traseiras',
+    'Setas e pisca-alerta funcionando',
+    'Luz de ré e buzina de ré',
+    'Bateria sem sulfatação / terminais limpos',
+    'Alternador carregando corretamente',
+  ]},
+  { id: 'cabine', icon: '🪑', label: 'Cabine e Ergonomia', items: [
+    'Cinto de segurança funcional (todos os lugares)',
+    'Espelhos retrovisores ajustados e limpos',
+    'Para-brisas sem trincas ou obstruções',
+    'Limpadores de para-brisas com borracha em bom estado',
+    'Tacógrafo / rastreador ligado e funcionando',
+    'Documentação do veículo no local (CRLV, seguro)',
+    'Extintor de incêndio vigente e acessível',
+    'Triângulo de segurança presente',
+  ]},
+  { id: 'carroceria', icon: '📦', label: 'Carroceria e Implemento', items: [
+    'Travas e fechamentos da carroceria operacionais',
+    'Sem danos estruturais visíveis (amassados, trincas)',
+    'Sinalização refletiva íntegra',
+    'Amarrações / tensores em bom estado (se aplicável)',
+    'Implemento / equipamento sem danos ou vazamentos',
+  ]},
+];
+
+const state = {};
+let totalItems = 0;
+
+function build() {
+  totalItems = 0;
+  SECTIONS.forEach(s => totalItems += s.items.length);
+
+  const c = document.getElementById('sections-container');
+  c.innerHTML = '';
+  SECTIONS.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <div class="card-header" id="hdr-${s.id}" onclick="toggleSection('${s.id}')">
+        <span class="icon">${s.icon}</span>
+        <span class="title">${s.label}</span>
+        <span class="badge" id="badge-${s.id}">0/${s.items.length}</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="card-body" id="body-${s.id}">
+        ${s.items.map((item, i) => `
+          <div class="item" id="item-${s.id}-${i}">
+            <div class="item-label">${item}</div>
+            <div class="radio-group">
+              <div class="rb ok" onclick="setStatus('${s.id}',${i},'ok',this)">✅ Conforme</div>
+              <div class="rb nok" onclick="setStatus('${s.id}',${i},'nok',this)">❌ Não conforme</div>
+              <div class="rb na" onclick="setStatus('${s.id}',${i},'na',this)">— N/A</div>
+            </div>
+            <textarea class="obs-field" id="obs-${s.id}-${i}" placeholder="Descreva a não conformidade (obrigatório)..." rows="2"></textarea>
+          </div>
+        `).join('')}
+      </div>`;
+    c.appendChild(div);
+  });
+
+  const d = new Date();
+  document.getElementById('f-data').value = d.toISOString().split('T')[0];
+  updateSummary();
+}
+
+function toggleSection(id) {
+  const body = document.getElementById(`body-${id}`);
+  const hdr = document.getElementById(`hdr-${id}`);
+  body.classList.toggle('hidden');
+  hdr.classList.toggle('collapsed');
+}
+
+function setStatus(sec, idx, val, el) {
+  const key = `${sec}-${idx}`;
+  state[key] = val;
+  const item = document.getElementById(`item-${sec}-${idx}`);
+  item.querySelectorAll('.rb').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  const obs = document.getElementById(`obs-${sec}-${idx}`);
+  obs.classList.toggle('show', val === 'nok');
+  updateBadge(sec);
+  updateSummary();
+}
+
+function updateBadge(sec) {
+  const s = SECTIONS.find(x => x.id === sec);
+  const done = s.items.filter((_, i) => state[`${sec}-${i}`]).length;
+  document.getElementById(`badge-${sec}`).textContent = `${done}/${s.items.length}`;
+  const allDone = done === s.items.length;
+  document.getElementById(`badge-${sec}`).style.background = allDone ? '#dcfce7' : '#dbeafe';
+  document.getElementById(`badge-${sec}`).style.color = allDone ? '#15803d' : '#1e40af';
+}
+
+function updateSummary() {
+  let ok = 0, nok = 0, na = 0, total = 0;
+  Object.values(state).forEach(v => {
+    total++;
+    if (v === 'ok') ok++;
+    else if (v === 'nok') nok++;
+    else if (v === 'na') na++;
+  });
+  document.getElementById('s-ok').textContent = ok;
+  document.getElementById('s-nok').textContent = nok;
+  document.getElementById('s-na').textContent = na;
+  document.getElementById('progress-bar').style.width = `${Math.round((total / totalItems) * 100)}%`;
+}
+
+function resetForm() {
+  if (!confirm('Limpar todo o checklist?')) return;
+  Object.keys(state).forEach(k => delete state[k]);
+  build();
+}
+
+async function submitChecklist() {
+  const operador = document.getElementById('f-operador').value.trim();
+  const veiculo = document.getElementById('f-veiculo').value.trim();
+  const data = document.getElementById('f-data').value;
+  if (!operador || !veiculo || !data) {
+    showToast('Preencha Data, Operador e Veículo antes de enviar.', true);
+    return;
+  }
+
+  // Monta lista de todos os itens
+  const itens = [];
+  SECTIONS.forEach(s => {
+    s.items.forEach((item, i) => {
+      const key = `${s.id}-${i}`;
+      const status = state[key] || 'Não avaliado';
+      const obs = document.getElementById(`obs-${s.id}-${i}`)?.value.trim() || '';
+      itens.push({ secao: s.label, item, status, observacao: obs });
+    });
+  });
+
+  const payload = {
+    data,
+    turno: document.getElementById('f-turno').value,
+    operador,
+    veiculo,
+    placa: document.getElementById('f-placa').value.trim(),
+    hodometro: document.getElementById('f-hodometro').value.trim(),
+    itens,
+    timestamp: new Date().toLocaleString('pt-BR'),
+  };
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = '⏳ Enviando...';
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    showToast('✅ Checklist enviado com sucesso!');
+    resetForm();
+  } catch (e) {
+    showToast('❌ Erro ao enviar. Verifique a URL do Apps Script.', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '📤 Enviar Checklist';
+  }
+}
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+build();
+</script>
 </body>
 </html>
